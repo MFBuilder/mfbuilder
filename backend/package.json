@@ -1,0 +1,15 @@
+{
+  "name": "@mfbuilder/backend",
+  "version": "0.1.0",
+  "description": "",
+  "author": "Vladyslav Rybak <vladyslavry141@gmail.com>",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "engines": {
+    "node": "20"
+  }
+}

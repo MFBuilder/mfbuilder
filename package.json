@@ -1,0 +1,20 @@
+{
+  "name": "mfbuilder",
+  "version": "0.1.0",
+  "description": "",
+  "author": "Vladyslav Rybak <vladyslavry141@gmail.com>",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MFBuilder/mfbuilder.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MFBuilder/mfbuilder/issues"
+  },
+  "homepage": "https://github.com/MFBuilder/mfbuilder#readme"
+}

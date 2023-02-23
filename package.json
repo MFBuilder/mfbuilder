@@ -1,0 +1,22 @@
+{
+  "name": "@mfbuilder/core",
+  "version": "0.1.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MFBuilder/mfbuilder.git"
+  },
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "author": "Vladyslav Rybak <vladyslavry141@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/MFBuilder/mfbuilder/issues"
+  },
+  "homepage": "https://github.com/MFBuilder/mfbuilder#readme"
+}

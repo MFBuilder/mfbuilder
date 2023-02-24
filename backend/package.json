@@ -1,13 +1,38 @@
 {
   "name": "@mfbuilder/backend",
-  "version": "0.1.0",
   "description": "",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "version": "0.1.0",
+  "author": "Vladyslav Rybak <vladyslavry141@gmail.com>",
+  "license": "Apache-2.0",
+  "keywords": [],
   "engines": {
     "node": "18"
   },
-  "author": "Vladyslav Rybak <vladyslavry141@gmail.com>",
-  "license": "Apache-2.0"
+  "main": "app.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "lint": "eslint . & prettier  -l --no-error-on-unmatched-pattern --cache true --cache-strategy metadata '**/*.js' '**/*.ts' '**/*.json'",
+    "lint:exact": "--no-error-on-unmatched-pattern",
+    "fmt": "prettier -w --no-error-on-unmatched-pattern --cache true --cache-strategy metadata '**/*.js' '**/*.ts' '**/*.json'",
+    "test": "tap \"test/**/*.test.js\"",
+    "start": "fastify start -l info app.js",
+    "dev": "fastify start -w -l info -P app.js"
+  },
+  "dependencies": {
+    "@fastify/autoload": "^5.0.0",
+    "@fastify/sensible": "^5.0.0",
+    "fastify": "^4.0.0",
+    "fastify-cli": "^5.7.1",
+    "fastify-plugin": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.14.1",
+    "eslint": "^8.34.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.27.5",
+    "prettier": "^2.8.4",
+    "tap": "^16.1.0"
+  }
 }

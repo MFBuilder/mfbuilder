@@ -1,0 +1,175 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+model Workspace {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  accountSchemas    AccountSchema[]
+  dataRecordSchemas DataRecordSchema[]
+  workspaceAccounts WorkspaceAccount[]
+  channels          Channel[]
+  flowGroups        FlowGroup[]
+}
+
+model AccountSchema {
+  id          Int  @id @default(autoincrement())
+  schema      Json
+  workspaceId Int
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+
+  accounts Account[]
+}
+
+model Account {
+  id       Int  @id @default(autoincrement())
+  schemaId Int
+  data     Json
+
+  schema AccountSchema @relation(fields: [schemaId], references: [id])
+
+  workspaceAccounts WorkspaceAccount[]
+  accountChannels   AccountChannel[]
+}
+
+model WorkspaceAccount {
+  id          Int    @id @default(autoincrement())
+  accountId   Int
+  workspaceId Int
+  role        String
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  account   Account   @relation(fields: [accountId], references: [id])
+}
+
+model DataRecordSchema {
+  id          Int    @id @default(autoincrement())
+  name        String
+  schema      Json
+  workspaceId Int
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+
+  dataRecords DataRecord[]
+}
+
+model DataRecord {
+  id       Int  @id @default(autoincrement())
+  schemaId Int
+  data     Json
+
+  schema DataRecordSchema @relation(fields: [schemaId], references: [id])
+}
+
+model Channel {
+  id            Int    @id @default(autoincrement())
+  kind          String
+  workspaceId   Int
+  configuration Json
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+
+  accountChannels AccountChannel[]
+}
+
+model AccountChannel {
+  id               Int    @id @default(autoincrement())
+  accountId        Int
+  channelId        Int
+  channelAccountId Int
+  status           String
+  data             Json
+
+  account Account @relation(fields: [accountId], references: [id])
+  channel Channel @relation(fields: [channelId], references: [id])
+
+  flowStacks FlowStack[]
+}
+
+model FlowGroup {
+  id          Int    @id @default(autoincrement())
+  name        String
+  workspaceId Int
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+
+  flows Flow[]
+}
+
+model Flow {
+  id            Int    @id @default(autoincrement())
+  name          String
+  status        String
+  flowGroupId   Int
+  contextSchema Json
+
+  flowGroup FlowGroup @relation(fields: [flowGroupId], references: [id])
+
+  flowActions          FlowAction[]
+  FlowActionConnection FlowActionConnection[]
+  FlowStack            FlowStack[]
+}
+
+model FlowAction {
+  id            Int    @id @default(autoincrement())
+  name          String
+  kind          String
+  flowId        Int
+  configuration Json
+
+  flow                      Flow                   @relation(fields: [flowId], references: [id])
+  fromFlowActionConnections FlowActionConnection[] @relation(name: "fromFlowActionConnection")
+  toFlowActionConnections   FlowActionConnection[] @relation(name: "toFlowActionConnection")
+
+  flowStates FlowState[]
+}
+
+model FlowActionConnection {
+  id     Int    @id @default(autoincrement())
+  flowId Int
+  fromId Int
+  toId   Int
+  socket String
+
+  flow           Flow       @relation(fields: [flowId], references: [id])
+  fromFlowAction FlowAction @relation(name: "fromFlowActionConnection", fields: [fromId], references: [id])
+  toFlowAction   FlowAction @relation(name: "toFlowActionConnection", fields: [toId], references: [id])
+}
+
+model FlowStack {
+  id               Int      @id @default(autoincrement())
+  flowId           Int
+  parentId         Int?
+  accountChannelId Int
+  context          Json
+  createdAt        DateTime @default(now())
+
+  flow           Flow           @relation(fields: [flowId], references: [id])
+  parent         FlowStack?     @relation(name: "parentFlowStack", fields: [parentId], references: [id])
+  accountChannel AccountChannel @relation(fields: [accountChannelId], references: [id])
+  children       FlowStack[]    @relation(name: "parentFlowStack")
+
+  flowStates FlowState[]
+}
+
+model FlowState {
+  id           Int      @id @default(autoincrement())
+  flowStackId  Int
+  flowActionId Int
+  state        Json
+  channelState Json
+  createdAt    DateTime @default(now())
+
+  flowStack  FlowStack  @relation(fields: [flowStackId], references: [id])
+  flowAction FlowAction @relation(fields: [flowActionId], references: [id])
+}

@@ -1,5 +1,5 @@
-import { Account } from './account';
-import { ID } from './typeUtils';
+import { ID } from '../interfaces/utils.js';
+import { Profile } from './profile.js';
 
 export type Workspace = {
   id: ID;
@@ -8,7 +8,7 @@ export type Workspace = {
 
 export type WorkspaceAccount = {
   id: ID;
-  accountId: Account['id'];
+  accountId: Profile['id'];
   workspaceId: Workspace['id'];
   role: 'owner' | 'member';
 };

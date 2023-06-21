@@ -1,6 +1,6 @@
-import { Schema } from './schema';
-import { AnyRecord, ID } from './typeUtils';
-import { Workspace } from './workspace';
+import { AnyRecord, ID } from '../interfaces/utils.js';
+import { Schema } from './schema.js';
+import { Workspace } from './workspace.js';
 
 export type DataRecordSchema = {
   id: ID;

@@ -1,12 +1,12 @@
-import { AccountChannel } from './channel';
-import { Flow, FlowAction } from './flow';
-import { AnyRecord, ID } from './typeUtils';
+import { AnyRecord, ID } from '../interfaces/utils.js';
+import { ProfileChannel } from './channel.js';
+import { Flow, FlowAction } from './flow.js';
 
 export type FlowStack = {
   id: ID;
   flowId: Flow['id'];
   parentId: FlowStack['id'] | null;
-  accountChannelId: AccountChannel['id'];
+  profileChannelId: ProfileChannel['id'];
   context: AnyRecord;
   createdAt: Date;
 };

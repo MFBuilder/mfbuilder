@@ -1,6 +1,6 @@
-import { Account } from './account';
-import { AnyRecord, ID } from './typeUtils';
-import { Workspace } from './workspace';
+import { AnyRecord, ID } from '../interfaces/utils.js';
+import { Profile } from './profile.js';
+import { Workspace } from './workspace.js';
 
 export type Channel = {
   id: ID;
@@ -9,14 +9,14 @@ export type Channel = {
   configuration: AnyRecord;
 };
 
-export type AccountChannel = {
+export type ProfileChannel = {
   id: ID;
-  accountId: Account['id'];
+  profileId: Profile['id'];
   channelId: Channel['id'];
   /**
    * The unique identifier of an user or a chat
    */
-  channelAccountId: string;
+  channelProfileId: string;
   status: 'active' | 'blocked';
   data: AnyRecord;
 };

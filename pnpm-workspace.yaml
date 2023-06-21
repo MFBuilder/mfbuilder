@@ -1,5 +1,6 @@
 packages:
   # include packages in subfolders (e.g. apps/ and packages/)
   - "backend"
-  - 'frontend'
+  - "frontend"
+  - "flow-engine"
 

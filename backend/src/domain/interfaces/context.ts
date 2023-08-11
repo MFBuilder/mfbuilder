@@ -1,32 +1,32 @@
-import { Account } from '../models/account';
-import { Channel, ProfileChannel } from '../models/channel';
-import { DbClient } from './dbClient';
-import { Logger } from './logger';
+import { AccountEntity } from '../entities/account.js';
+import { ProfileEntity } from '../entities/profile.js';
+import { ChannelAccount } from './channelManager.js';
+import { DbClient } from './dbClient.js';
+import { Logger } from './logger.js';
 
-export type DbContext<D> = {
+export type SystemContext<D = unknown> = {
   logger: Logger;
   dbClient: DbClient<D>;
-  withTransaction: (fn: (ctx: DbContext<D>) => Promise<void>) => Promise<void>;
-  clone(): DbContext<D>;
+  withTransaction: <T>(fn: (ctx: SystemContext<D>) => Promise<T>) => Promise<T>;
+  clone(): SystemContext<D>;
 };
 
-export type ApiContext<D> = DbContext<D> & {
-  accountId: Account['id'];
-  withTransaction: (fn: (ctx: ApiContext<D>) => Promise<void>) => Promise<void>;
-  clone(): ApiContext<D>;
-};
-
-export type FlowProfileChannel = {
-  kind: Channel['kind'];
-  channelId: Channel['id'];
-  channelProfileId: ProfileChannel['channelProfileId'];
-  data: ProfileChannel['data'];
-};
-
-export type FlowContext<D> = DbContext<D> & {
-  profileChannel: FlowProfileChannel;
+export type ApiSystemContext<D = unknown> = SystemContext<D> & {
+  accountId: AccountEntity['id'];
   withTransaction: (
-    fn: (ctx: FlowContext<D>) => Promise<void>
+    fn: (ctx: ApiSystemContext<D>) => Promise<void>
   ) => Promise<void>;
-  clone(): FlowContext<D>;
+  clone(): ApiSystemContext<D>;
+};
+
+export type FlowChannelProfile = ChannelAccount & {
+  profileId: ProfileEntity['id'];
+};
+
+export type FlowSystemContext<D = unknown> = SystemContext<D> & {
+  channelProfile: FlowChannelProfile;
+  withTransaction: (
+    fn: (ctx: FlowSystemContext<D>) => Promise<void>
+  ) => Promise<void>;
+  clone(): FlowSystemContext<D>;
 };

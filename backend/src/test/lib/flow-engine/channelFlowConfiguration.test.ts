@@ -1,13 +1,13 @@
 import { test } from 'tap';
-import { ChannelFlowConfiguration } from '../../../lib/flow-engine/channelFlowConfiguration';
 import {
   FlowActionRunParams,
   FlowActionRunner,
-} from '../../../lib/flow-engine/flowActionRunner';
+} from '../../../domain/interfaces/flowEngine.js';
+import { ChannelFlowConfiguration } from '../../../lib/flow-engine/channelFlowConfiguration';
 
 const ACTION_RUNNER_KIND = 'test';
 
-const ACTION_RUNNER: FlowActionRunner<unknown> = {
+const ACTION_RUNNER: FlowActionRunner = {
   kind: ACTION_RUNNER_KIND,
   async run(ctx: unknown, params: FlowActionRunParams) {
     return { kind: 'finish', context: params.context, socket: 0 };

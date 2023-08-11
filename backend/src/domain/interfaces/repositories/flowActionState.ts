@@ -1,11 +1,8 @@
-import { FlowActionState } from '../../models/flowState';
-import { DbContext } from '../context';
-import { DbClient } from '../dbClient';
-import { BaseRepository } from '../repository';
+import { FlowActionStateEntity } from '../../entities/flowActionState.js';
+import { SystemContext } from '../context.js';
+import { BaseRepository } from '../repository.js';
 
-export { FlowActionState } from '../../models/flowState';
-export type FlowActionStateBase = Omit<FlowActionState, 'id'>;
-export type FlowActionStateDelta = Partial<FlowActionStateBase>;
+export type FlowActionStateDelta = Partial<Omit<FlowActionStateEntity, 'id'>>;
 
-export type FlowActionStateRepository<C extends DbContext<DbClient<unknown>>> =
-  BaseRepository<C, FlowActionState, FlowActionStateBase, FlowActionStateDelta>;
+export type FlowActionStateRepository<C extends SystemContext = SystemContext> =
+  BaseRepository<C, FlowActionStateEntity, FlowActionStateDelta>;

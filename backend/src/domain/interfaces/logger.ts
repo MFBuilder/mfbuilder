@@ -1,4 +1,4 @@
-import { AnyRecord } from './utils';
+import { AnyRecord } from './utils.js';
 
 export type LogFn =
   | ((object: AnyRecord) => void)

@@ -2,6 +2,8 @@
   "extends": "fastify-tsconfig",
   "compilerOptions": {
     "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node16",
     "outDir": "dist",
     "sourceMap": true,
     "strictNullChecks": true,

@@ -6,6 +6,7 @@ import {
   ERROR_FLOW_RESULT,
   FINISH_FLOW,
   FINISH_FLOW_RESULT,
+  FLOW_SYSTEM_CONTEXT,
   ONGOING_FLOW,
   ONGOING_FLOW_RESULT,
   SUBFLOW_FLOW,
@@ -62,20 +63,22 @@ test('Check runFlow method', async (t) => {
   const flowEngine = new FlowEngine([CHANNEL_FLOW_CONFIGURATION]);
 
   t.same(
-    await flowEngine.runFlow({}, SUM_FLOW, { context: {} }),
+    await flowEngine.runFlow(FLOW_SYSTEM_CONTEXT, SUM_FLOW, { context: {} }),
     SUM_FLOW_RESULT,
     'run SUM_FLOW should return expected FlowFinishResult'
   );
 
   t.same(
-    await flowEngine.runFlow({}, TWO_STEP_FLOW, { context: {} }),
+    await flowEngine.runFlow(FLOW_SYSTEM_CONTEXT, TWO_STEP_FLOW, {
+      context: {},
+    }),
     TWO_STEP_FLOW_RESULT,
     'run TWO_STEP_FLOW should return expected FlowFinishResult'
   );
 
   t.same(
     await flowEngine.runFlow(
-      {},
+      FLOW_SYSTEM_CONTEXT,
       TWO_STEP_FLOW,
       { context: { sum1: TWO_STEP_FLOW_RESULT.context.sum1 } },
       '2'
@@ -86,7 +89,7 @@ test('Check runFlow method', async (t) => {
 
   t.same(
     await flowEngine.runFlow(
-      {},
+      FLOW_SYSTEM_CONTEXT,
       TWO_STEP_FLOW,
       { context: {} },
       TWO_STEP_FLOW_ERROR_RESULT.flowActionId
@@ -96,31 +99,37 @@ test('Check runFlow method', async (t) => {
   );
 
   t.same(
-    await flowEngine.runFlow({}, ONGOING_FLOW, { context: {} }),
+    await flowEngine.runFlow(FLOW_SYSTEM_CONTEXT, ONGOING_FLOW, {
+      context: {},
+    }),
     ONGOING_FLOW_RESULT,
     'run ONGOING_FLOW should return expected FlowOngoingResult'
   );
 
   t.same(
-    await flowEngine.runFlow({}, ERROR_FLOW, { context: {} }),
+    await flowEngine.runFlow(FLOW_SYSTEM_CONTEXT, ERROR_FLOW, { context: {} }),
     ERROR_FLOW_RESULT,
     'run ERROR_FLOW should return expected FlowErrorResult'
   );
 
   t.same(
-    await flowEngine.runFlow({}, SUBFLOW_FLOW, { context: {} }),
+    await flowEngine.runFlow(FLOW_SYSTEM_CONTEXT, SUBFLOW_FLOW, {
+      context: {},
+    }),
     SUBFLOW_FLOW_RESULT,
     'run SUBFLOW_FLOW should return expected FlowSubflowResult'
   );
 
   t.same(
-    await flowEngine.runFlow({}, TWO_STEP_FLOW, { context: {} }),
+    await flowEngine.runFlow(FLOW_SYSTEM_CONTEXT, TWO_STEP_FLOW, {
+      context: {},
+    }),
     TWO_STEP_FLOW_RESULT,
     'run TWO_STEP_FLOW should return expected FlowFinishResult'
   );
 
   t.same(
-    await flowEngine.runFlow({}, FINISH_FLOW, { context: {} }),
+    await flowEngine.runFlow(FLOW_SYSTEM_CONTEXT, FINISH_FLOW, { context: {} }),
     FINISH_FLOW_RESULT,
     'run FINISH_FLOW should return expected FlowFinishResult '
   );

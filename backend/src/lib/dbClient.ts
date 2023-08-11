@@ -1,14 +1,14 @@
-import { PrismaClient } from '.prisma/client';
+import { PrismaClient } from '.prisma/client.js';
+import { AccountEntity } from '../domain/entities/account.js';
 import {
-  FlowProfileChannel,
-  ApiContext as IApiContext,
-  DbContext as IDbContext,
-  FlowContext as IFlowContext,
+  FlowChannelProfile,
+  ApiSystemContext as IApiContext,
+  SystemContext as IDbContext,
+  FlowSystemContext as IFlowContext,
 } from '../domain/interfaces/context.js';
 import { DbClient as IDbClient } from '../domain/interfaces/dbClient.js';
 import { Logger } from '../domain/interfaces/logger.js';
 import { AnyRecord, ID } from '../domain/interfaces/utils.js';
-import { Account } from '../domain/models/account.js';
 
 type PrismaTransactionClient = Omit<
   PrismaClient,
@@ -71,12 +71,12 @@ export class DbContext<D> implements IDbContext<D> {
 export class ApiContext<D> implements IApiContext<D> {
   dbClient: IDbClient<D>;
   logger: Logger;
-  accountId: Account['id'];
+  accountId: AccountEntity['id'];
 
   constructor(
     logger: Logger,
     dbClient: IDbClient<D>,
-    accountId: Account['id']
+    accountId: AccountEntity['id']
   ) {
     this.logger = logger;
     this.dbClient = dbClient;
@@ -104,12 +104,12 @@ export type ChannelAccount = { channelAccountId: ID; data: AnyRecord };
 export class FlowContext<D> implements IFlowContext<D> {
   dbClient: IDbClient<D>;
   logger: Logger;
-  profileChannel: FlowProfileChannel;
+  profileChannel: FlowChannelProfile;
 
   constructor(
     logger: Logger,
     dbClient: IDbClient<D>,
-    accountChannel: FlowProfileChannel
+    accountChannel: FlowChannelProfile
   ) {
     this.logger = logger;
     this.dbClient = dbClient;

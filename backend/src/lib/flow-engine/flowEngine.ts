@@ -1,84 +1,19 @@
-import { AnyRecord, ID } from '../../domain/interfaces/utils.js';
-import { ChannelFlowConfiguration } from './channelFlowConfiguration.js';
+import { FlowSystemContext } from '../../domain/interfaces/context.js';
 import {
   FlowActionResult,
   FlowActionRunParams,
-  FlowActionState,
-  FlowContext,
-} from './flowActionRunner.js';
+  FlowConfiguration,
+  FlowResult,
+  FlowState,
+  FlowStep,
+  FlowEngine as IFlowEngine,
+} from '../../domain/interfaces/flowEngine.js';
+import { ChannelFlowConfiguration } from './channelFlowConfiguration.js';
 
-export type Flow = {
-  id: ID;
-  name: string;
-  channelKind: string;
-};
+export class FlowEngine implements IFlowEngine {
+  private channelConfigurationMap: Map<string, ChannelFlowConfiguration>;
 
-export type FlowAction = {
-  id: ID;
-  name: string;
-  kind: string;
-  configuration: AnyRecord;
-};
-
-export type FlowConfiguration = Flow & {
-  startActionId: FlowAction['id'];
-  actions: Map<FlowAction['id'], FlowAction>;
-  actionConnections: Map<
-    FlowAction['id'],
-    Map<number, FlowAction['id'] | null>
-  >;
-};
-
-export type FlowState = {
-  context: AnyRecord;
-  actionState?: FlowActionState;
-};
-
-export type FlowOngoingResult = {
-  kind: 'ongoing';
-  flowId: Flow['id'];
-  context: FlowContext;
-  flowActionId: FlowAction['id'];
-  actionState?: Partial<FlowActionState>;
-};
-
-export type FlowFinishResult = {
-  kind: 'finish';
-  flowId: Flow['id'];
-  context: FlowContext;
-};
-
-export type FlowErrorResult = {
-  kind: 'error';
-  flowId: Flow['id'];
-  context: FlowContext;
-  flowActionId: FlowAction['id'];
-  error: unknown;
-};
-
-export type FlowSubflowResult = {
-  kind: 'subflow';
-  flowId: Flow['id'];
-  context: FlowContext;
-  actionId: FlowAction['id'];
-  actionState?: Partial<FlowActionState>;
-  subflow: {
-    id: Flow['id'];
-    actionId?: FlowAction['id'];
-    context: FlowContext;
-  };
-};
-
-export type FlowResult =
-  | FlowOngoingResult
-  | FlowFinishResult
-  | FlowErrorResult
-  | FlowSubflowResult;
-
-export class FlowEngine<C> {
-  private channelConfigurationMap: Map<string, ChannelFlowConfiguration<C>>;
-
-  constructor(channelConfigurations?: ChannelFlowConfiguration<C>[]) {
+  constructor(channelConfigurations?: ChannelFlowConfiguration[]) {
     this.channelConfigurationMap = new Map(
       channelConfigurations?.map((channelConfiguration) => [
         channelConfiguration.channelKind,
@@ -87,7 +22,7 @@ export class FlowEngine<C> {
     );
   }
 
-  addChannelConfiguration(channelConfiguration: ChannelFlowConfiguration<C>) {
+  addChannelConfiguration(channelConfiguration: ChannelFlowConfiguration) {
     this.channelConfigurationMap.set(
       channelConfiguration.channelKind,
       channelConfiguration
@@ -99,7 +34,7 @@ export class FlowEngine<C> {
     return this.channelConfigurationMap.delete(channelKind);
   }
 
-  getChannelConfiguration(channelKind: string): ChannelFlowConfiguration<C> {
+  getChannelConfiguration(channelKind: string): ChannelFlowConfiguration {
     const channelConfiguration = this.channelConfigurationMap.get(channelKind);
 
     if (!channelConfiguration) {
@@ -110,7 +45,7 @@ export class FlowEngine<C> {
   }
 
   private async runAction(
-    ctx: C,
+    ctx: FlowSystemContext,
     channelKind: string,
     runnerKind: string,
     params: FlowActionRunParams
@@ -121,14 +56,14 @@ export class FlowEngine<C> {
   }
 
   private async runFlowFrom(
-    ctx: C,
+    ctx: FlowSystemContext,
     configuration: FlowConfiguration,
-    actionId: FlowAction['id'],
+    actionId: FlowStep['id'],
     state: FlowState,
     data?: unknown
   ) {
     const channelKind = configuration.channelKind;
-    const flowAction = configuration.actions.get(actionId);
+    const flowAction = configuration.steps.get(actionId);
 
     if (!flowAction) {
       throw new Error('Unknown flow action');
@@ -148,10 +83,10 @@ export class FlowEngine<C> {
   }
 
   async runFlow(
-    ctx: C,
+    ctx: FlowSystemContext,
     configuration: FlowConfiguration,
     state: FlowState,
-    actionId?: FlowAction['id'],
+    actionId?: FlowStep['id'],
     data?: unknown
   ): Promise<FlowResult> {
     let currentActionId = actionId ?? configuration.startActionId;
@@ -171,7 +106,7 @@ export class FlowEngine<C> {
           kind: 'ongoing',
           flowId: configuration.id,
           context: currentContext,
-          actionState: result.actionState,
+          stepState: result.stepState,
           flowActionId: currentActionId,
         };
       }
@@ -187,7 +122,7 @@ export class FlowEngine<C> {
       }
 
       if (result.kind === 'subflow') {
-        const { actionState, subflow } = result;
+        const { stepState: actionState, subflow } = result;
 
         return {
           kind: 'subflow',
@@ -200,7 +135,7 @@ export class FlowEngine<C> {
       }
 
       const { socket, context: resultContext = {} } = result;
-      const nextActionId = configuration.actionConnections
+      const nextActionId = configuration.stepConnections
         .get(currentActionId)
         ?.get(socket);
 
